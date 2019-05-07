@@ -4,9 +4,54 @@ import { Link } from 'react-router-dom';
 
 import logo from '../logo.svg';
 
-import '../style/Index.css';
-
 import styled from 'styled-components';
+
+const IndexWrapper = styled.div`
+  height: 100%;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #050217;
+`
+
+const SearchContainer = styled.div`
+  width: 30vh;
+`
+
+const QueryInput = styled.input`
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #050417;
+  padding: 8px;
+  border: none;
+`
+
+const CollectionsInput = styled.select`
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #050417;
+  padding: 8px;
+  border: none;
+`
+
+const SearchButton = styled(Link)`
+  color: #FFFFFF;
+  display: block;
+  background: #2A2B8D;
+  border-radius: 25px;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 0.1em;
+  padding: 20px;
+  text-align: center;
+`
+
 
 const API = "https://api.unsplash.com/collections/featured/?client_id=930640e0b7713dca3ab1a0751b6f4b4741d1dfca6a72be2a071cddd6c1d0c92c";
 
@@ -41,26 +86,30 @@ class Index extends Component {
   }
 
   render() {
+    let url = `/${this.state.query}`
+    if (this.state.collection !== null) {
+      url = `${url}/${this.state.collection}`;
+    }
+
     return (
-      <div className="App-header">
-   
-        <img src={logo} className="App-logo" />
-        <input onChange={this.onQueryChange} className="Input-query" placeholderClassName="Placeholder-query" placeholder="Query"/>
-        
-        <div className="Select-collections-back"></div>
-        <select onChange={this.onCollectionChange} className="Select">
-          {this.state.collections.map(collection =>
-            <option key={collection.id} value={collection.id}>{collection.title}</option>
-            )}
-        </select>
-        
-        <button className="Button" onSubmit={`/${this.state.query}/${this.state.collection}`}>
-        <Link to={`/${this.state.query}/${this.state.collection}`} className="Button-search" activeClassName="active">
-          SEARCH
-        </Link>
-        </button>
-       
-      </div>
+      <IndexWrapper>
+        <SearchContainer>
+          <img src={logo} />
+          <QueryInput onChange={this.onQueryChange} placeholder="Query"/>
+
+          <CollectionsInput onChange={this.onCollectionChange}>
+            <option disabled selected>Collection</option>
+            {this.state.collections.map(collection =>
+              <option key={collection.id} value={collection.id}>{collection.title}</option>
+              )}
+          </CollectionsInput>
+
+          <SearchButton to={url}>
+            SEARCH
+          </SearchButton>
+
+        </SearchContainer>
+      </IndexWrapper>
     );
   }
 }
