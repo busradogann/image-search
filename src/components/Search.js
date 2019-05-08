@@ -67,9 +67,38 @@ const SearchButton = styled(Link)`
   }
 `
 
-const Images = styled.div`
-
+const GalleryWrapper = styled.div`
+  width: 80vw;
+  margin: 60px auto;
 `
+
+
+const captionStyle = {
+  backgroundColor: "rgba(0, 0, 0, 0.8)",
+  maxHeight: "240px",
+  overflow: "hidden",
+  position: "absolute",
+  bottom: "0",
+  width: "100%",
+  color: "white",
+  padding: "2px",
+  fontSize: "90%"
+};
+
+const customTagStyle = {
+  wordWrap: "break-word",
+  display: "inline-block",
+  backgroundColor: "white",
+  height: "auto",
+  fontSize: "75%",
+  fontWeight: "600",
+  lineHeight: "1",
+  padding: ".2em .6em .3em",
+  borderRadius: ".25em",
+  color: "black",
+  verticalAlign: "baseline",
+  margin: "2px"
+};
 
 
 const APICollections = "https://api.unsplash.com/collections/featured/?client_id=930640e0b7713dca3ab1a0751b6f4b4741d1dfca6a72be2a071cddd6c1d0c92c";
@@ -94,16 +123,27 @@ class Search extends Component {
   componentDidMount(){
     let urlCollections = `${APICollections}&per_page=30`
 
-    let url = `${API}&query=${this.state.query}&per_page=10`
+    let url = `${API}&query=${this.state.query}&per_page=30`
     if (this.state.collection !== undefined) {
       url = `${url}&collections=${this.state.collection}`
     }
 
     fetch(url)
       .then(response => response.json())
-      .then(data => this.setState({ results: data.results }));
+      .then(data => {
+        const images = data.results.map(result => ({
+          src: result.urls.full,
+          thumbnail: result.urls.small,
+          thumbnailWidth: result.width,
+          thumbnailHeight: result.height,
+          tags: [],
+          caption: `"${result.alt_description}" by ${result.user.name}`
+        }));
 
-      fetch(urlCollections)
+        this.setState({ results: images });
+      });
+
+    fetch(urlCollections)
       .then(response => response.json())
       .then(data => this.setState({ collections: data }));
   }
@@ -117,12 +157,35 @@ class Search extends Component {
     this.setState({collection: e.target.value});
   }
 
+  setCustomTags (i) {
+    return (
+        i.tags.map((t) => {
+            return (<div
+                    key={t.value}
+                    style={customTagStyle}>
+                    {t.title}
+                    </div>);
+        })
+    );
+  }
+
   render() {
     let url = `/${this.state.query}`
     if (this.state.collection !== null) {
       url = `${url}/${this.state.collection}`;
     }
 
+    var images =
+    this.state.results.map((i) => {
+        i.customOverlay = (
+                <div style={captionStyle}>
+                <div>{i.caption}</div>
+                {i.hasOwnProperty('tags') &&
+                 this.setCustomTags(i)}
+            </div>);
+        return i;
+    });
+  
     return (
       <div>
         <Navbar>
@@ -144,20 +207,13 @@ class Search extends Component {
           </SearchButton>
         </Navbar>
 
-        <Images>
-          <div className="Row">
-            <div className="Column">
-            {this.state.results.map(result =>
-              <div key={result.id}>
-              <a href={result.urls.full}>
-                <img src={result.urls.small} className="image"/>
-              </a>
-              </div>
-            )}
-            </div>
-          </div>
-        </Images>
-          
+        <GalleryWrapper>
+          <Gallery
+            images={images}
+            enableImageSelection={false}
+          />
+        </GalleryWrapper>
+
       </div>
 
     );
