@@ -27,6 +27,7 @@ const QueryInput = styled.input`
   font-size: 16px;
   color: #050417;
   padding: 8px;
+  margin-top: 20px;
   border: none;
 `
 
@@ -37,10 +38,12 @@ const CollectionsInput = styled.select`
   font-size: 16px;
   color: #050417;
   padding: 8px;
+  margin-top: 20px;
   border: none;
 `
 
 const SearchButton = styled(Link)`
+  width: 95%;
   color: #FFFFFF;
   display: block;
   background: #2A2B8D;
@@ -48,7 +51,8 @@ const SearchButton = styled(Link)`
   font-size: 14px;
   line-height: 19px;
   letter-spacing: 0.1em;
-  padding: 20px;
+  padding: 12px;
+  margin-top: 20px;
   text-align: center;
 `
 
